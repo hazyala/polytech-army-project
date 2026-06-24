@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  army-bot:
+    build: .
+    container_name: army_simulator_proto
+    
+    ports:
+      - "8501:8501"
+      
+    volumes:
+      - .:/Army_2D_Simulator_Proto
+      
+    environment:
+      - PYTHONUNBUFFERED=1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
