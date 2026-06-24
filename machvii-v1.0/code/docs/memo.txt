@@ -1,0 +1,49 @@
+# 에이전트 초기화 로직 (engine.py 참조)
+# 에이전트에게 정체성과 엄격한 행동 지침을 부여합니다.
+# 원격 Ollama 서버의 Gemma3:27b 모델을 연결합니다.
+# llm = ChatOllama(
+#     model="gemma3:27b", 
+#     base_url="http://ollama.aikopo.net", 
+#     temperature=0.0
+# )
+
+#올라마 실행 (로컬에서 직접 구동할 경우)
+ollama run gemma3:27b
+
+# 1. 가상환경 활성화
+source venv/bin/activate
+
+# 프롬프트가 (venv)로 시작해야 함!
+# (venv) hazyala@hazyalaubuntu:~/Project/MACH_SEVEN$
+
+# 2. 코드 실행
+# Streamlit을 통해 제어 센터 UI를 실행합니다.
+streamlit run code/main.py
+
+# 3. 카메라 자원 관리
+# 카메라 점유 오류 발생 시 관련 프로세스를 종료합니다.
+pkill -9 python
+
+# 카메라를 사용 중인 프로세스의 ID(PID)를 찾습니다.
+fuser /dev/video*
+
+# 만약 결과가 나온다면, 해당 프로세스를 강제로 종료합니다.
+# kill -9 [찾은PID]
+
+# 4. 도커 실행
+# 기억 장치인 FalkorDB 컨테이너를 구동합니다.
+# docker start MachSeven_brain
+
+# 5. 표정 샘플 실행
+# streamlit run code/scripts/face_sample.py
+
+# ======== Pybullet =========
+# 1.pybullet 경로에서 conda 가상환경 실행
+# conda activate pybullet_env
+
+# 2. pybullet 서버 실행
+# python main.py
+
+# 3. 새로운 터미널, 가상환경이 켜진 상태에서 pybullet 경로에서 Web UI 실행
+# streamlit run app.py
+
