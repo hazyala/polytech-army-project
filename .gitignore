@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+maengchil_*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# RealSense
+*.bag
+
+# YOLO
+runs/
+*.pt
+
+# Local
+.env
+.streamlit/falkordb_data/

@@ -1,0 +1,18 @@
+# 핵심 프레임워크 (안정화 버전)
+langchain<0.2.0
+langchain-community<0.2.0
+
+# UI 및 실시간 갱신 도구
+streamlit>=1.28.0
+streamlit-autorefresh 
+
+# 비전 및 수치 연산 
+numpy<2.0.0
+opencv-python<4.9.0
+ultralytics>=8.3.0
+pyrealsense2>=2.55.0
+
+# 기타 유틸리티
+requests
+Pillow
+falkordb
