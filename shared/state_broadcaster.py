@@ -1,0 +1,115 @@
+import threading
+import time
+from typing import Dict, Any, List, Callable
+
+# 아직 구현되지 않은 클래스가 있음 추후 UI 구축 된 후 사용 될 부분
+
+class StateBroadcaster:
+    """
+    LogicBrain이 상태를 발행하고 감정 시스템/UI가 이를 구독할 때 사용하는 싱글톤 브로드캐스터입니다.
+    """
+    _instance = None
+    _lock = threading.RLock()
+    
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super(StateBroadcaster, cls).__new__(cls)
+                    cls._instance._init()
+        return cls._instance
+    
+    def _init(self):
+        self.subscribers: List[Callable[[Dict[str, Any]], None]] = []
+        self.latest_state = {
+            "agent_state": "IDLE",     # PLANNING, EXECUTING, RECOVERING, IDLE 등 로봇의 상태
+            "object_type": "none",     # 컵, 공 등
+            "episode_result": "none",  # 성공(success), 실패(failure)
+            "robot_status": "ok",      # 정상(ok), 오류(error)
+            "chat_history": [],        # List of {"role": "bot", "text": "..."} 채팅 대화 이력으로 최대 20개까지만 유지
+            "events": [],              # [Fix] 이벤트 버퍼 (순간적인 신호 유실 방지), 최대 50개 유지
+            "timestamp": time.time()
+        }
+    
+    def log_chat(self, role: str, text: str):
+        with self._lock:
+            # 최근 20개까지만 기록 유지
+            msg = {"role": role, "text": text, "timestamp": time.time()}
+            history = self.latest_state.get("chat_history", [])
+            history.append(msg)
+            if len(history) > 20: history = history[-20:]
+            self.latest_state["chat_history"] = history
+            
+            # 리스너 호출을 위해 스냅샷 복사
+            snapshot = self.latest_state.copy()
+        
+        for sub in self.subscribers:
+            try: sub(snapshot)
+            except: pass
+
+    def log_thought(self, text: str):
+        """에이전트의 사고(Thought)를 기록합니다. UI에서는 챗 로그와 구분하여 표시할 수 있습니다."""
+        # 현재는 챗 로그에 [사고] 태그로 넣어 같이 보여주거나 별도 리스트로 관리합니다.
+        # 1차적으로는 챗 로그에 포함시키되 role='system' 또는 'thought'로 구분합니다.
+        self.log_chat("thought", text)
+    
+    # 나중에 UI 서버가 시작될 때, UI에 실시간 데이터를 뿌려주는 함수가 여기에 subscribe 될 예정
+    def subscribe(self, callback: Callable[[Dict[str, Any]], None]):
+        """상태 업데이트를 수신할 콜백 함수를 등록합니다."""
+        with self._lock:
+            if callback not in self.subscribers:
+                self.subscribers.append(callback)
+            else:
+                # [Fix] 중복 구독 방지 (Reload 시 누적 방지)
+                pass
+            
+    def publish(self, key: str, value: Any):
+        """특정 상태 키를 업데이트하고 구독자들에게 알립니다."""
+        # thought(사고) 로그일 경우 별도로 기록 처리
+        if key == "agent_thought":
+             self.log_thought(str(value))
+
+        with self._lock:
+            self.latest_state[key] = value
+            self.latest_state["timestamp"] = time.time()
+            snapshot = self.latest_state.copy()
+            
+        # 구독자들에게 알림 (비동기여야 하지만 우선 단순 루프 사용으로 구현됨)
+        for sub in self.subscribers:
+            try:
+                sub(snapshot)
+            except Exception as e:
+                print(f"[Broadcaster] 구독자 오류: {e}")
+
+    def publish_event(self, event_type: str, payload: Dict[str, Any]):
+        """
+        일시적인 이벤트(Event)를 발행합니다. 
+        상태(State)와 달리 덮어쓰지 않고 큐에 쌓이며, UI가 폴링할 때 유실되지 않도록 보존합니다.
+        """
+        import uuid
+        with self._lock:
+            event = {
+                "id": str(uuid.uuid4()),
+                "type": event_type,
+                "timestamp": time.time(),
+                "payload": payload
+            }
+            # 이벤트 버퍼에 추가
+            events = self.latest_state.get("events", [])
+            events.append(event)
+            if len(events) > 50: events = events[-50:] # 최대 50개 유지
+            self.latest_state["events"] = events
+            
+            snapshot = self.latest_state.copy()
+
+        # 구독자 알림
+        for sub in self.subscribers:
+            try: sub(snapshot)
+            except: pass
+
+    def get_snapshot(self) -> Dict[str, Any]:
+        with self._lock:
+            return self.latest_state.copy()
+
+# 전역 인스턴스
+broadcaster = StateBroadcaster()
