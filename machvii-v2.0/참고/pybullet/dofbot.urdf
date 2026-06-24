@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+<robot name="dofbot">
+	<link name="base">
+		<visual>
+			<origin xyz="-0.04 0 0.04" />
+			<geometry>
+				<box size="0.12 0.08 0.08" />
+			</geometry>
+		</visual>
+	</link>
+
+	<!--    Joint 1    -->
+	<joint name="joint1" type="revolute">
+		<parent link="base" />
+		<child link="shoulder" />
+
+		<origin xyz="0 0 0.08" rpy="0 0 0" />
+		<axis xyz="0 0 -1" />
+
+		<limit lower="-1.5708" upper="1.5708" />
+	</joint>
+
+
+	<!--    Shoulder    -->
+	<link name="shoulder">
+		<visual>
+			<origin xyz="0 0 0.02" rpy="0 0 0" />
+			<geometry>
+				<box size="0.022 0.043 0.04" />
+			</geometry>
+			<material name="red">
+				<color rgba="1 0.0 0.0 1" />
+			</material>
+		</visual>
+	</link>
+
+
+	<!--    Joint 2    -->
+	<joint name="joint2" type="revolute">
+		<parent link="shoulder" />
+		<child link="link1" />
+
+		<origin xyz="0 0 0.04" rpy="0 0 0" />
+		<axis xyz="0.0 -1 0.0" />
+
+		<limit lower="-0.96" upper="0.96" />
+	</joint>
+
+
+	<!--    Link 1    -->
+	<link name="link1">
+		<visual>
+			<origin xyz="0 0 0.04" rpy="0 0 0" />
+			<geometry>
+				<box size="0.022 0.043 0.08" />
+			</geometry>
+			<material name="orange">
+				<color rgba="1 0.5 0.0 1" />
+			</material>
+		</visual>
+	</link>
+
+
+	<!--    Joint 3    -->
+	<joint name="joint3" type="revolute">
+		<parent link="link1" />
+		<child link="link2" />
+
+		<origin xyz="0 0 0.08" rpy="0 0 0" />
+		<axis xyz="0.0 -1 0.0" />
+
+		<limit lower="-1.13" upper="1.13" effort="0.0" velocity="0.0" />
+	</joint>
+
+
+	<!--    Link 2    -->
+	<link name="link2">
+		<visual>
+			<origin xyz="0 0 0.04" />
+			<geometry>
+				<box size="0.022 0.043 0.08" />
+			</geometry>
+			<material name="yellow">
+				<color rgba="1 1 0.0 1" />
+			</material>
+		</visual>
+	</link>
+
+
+	<!--    Joint 4    -->
+	<joint name="joint4" type="revolute">
+		<parent link="link2" />
+		<child link="wrist" />
+
+		<origin xyz="0 0 0.08" rpy="0 0 0" />
+		<axis xyz="0.0 -1 0.0" />
+
+		<limit lower="-1.57" upper="1.57" effort="0.0" velocity="0.0" />
+	</joint>
+
+
+	<!--    wrist    -->
+	<link name="wrist">
+		<visual>
+			<origin xyz="0 0 0.04" />
+			<geometry>
+				<box size="0.03 0.05 0.08" />
+			</geometry>
+			<material name="green">
+				<color rgba="0.0 1 0.0 1" />
+			</material>
+		</visual>
+	</link>
+
+
+	<!--    joint 5    -->
+	<joint name="joint5" type="revolute">
+		<parent link="wrist" />
+		<child link="gripper_base" />
+
+		<origin xyz="0 0 0.08" rpy="0 0 0" />
+		<axis xyz="0.0 0.0 -1" />
+
+		<limit lower="-1.5708" upper="1.5708" />
+	</joint>
+
+	<!--    gripper_base    -->
+	<link name="gripper_base">
+		<visual>
+			<origin xyz="0 0 0.025" />
+			<geometry>
+				<box size="0.03 0.04 0.05" />
+			</geometry>
+			<material name="blue">
+				<color rgba="0.0 0.0 1.0 1.0" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0.025" />
+			<geometry>
+				<box size="0.02 0.02 0.05" />
+			</geometry>
+		</collision>
+	</link>
+
+	<!--    left finger joint   -->
+	<joint name="left_finger_joint" type="prismatic">
+		<parent link="gripper_base" />
+		<child link="left_finger" />
+
+		<origin xyz="0 0.007 0.05" rpy="0 0 0" />
+		<axis xyz="0.0 1 0.0" />
+
+		<limit lower="0.0" upper="0.03" effort="0.0" velocity="0.0" />
+	</joint>
+
+
+	<!--    left finger   -->
+	<link name="left_finger">
+		<visual>
+			<origin xyz="0 0 0.03" />
+			<geometry>
+				<box size="0.014 0.014 0.06" />
+			</geometry>
+			<material name="purple">
+				<color rgba="0.56 0 1 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0.03" />
+			<geometry>
+				<box size="0.01 0.01 0.06" />
+			</geometry>
+		</collision>
+	</link>
+
+
+	<!--    right finger joint   -->
+	<joint name="right_finger_joint" type="prismatic">
+		<parent link="gripper_base" />
+		<child link="right_finger" />
+
+		<origin xyz="0 -0.007 0.05" rpy="0 0 0" />
+		<axis xyz="0.0 -1 0.0" />
+
+		<limit lower="0.0" upper="0.03" effort="0.0" velocity="0.0" />
+	</joint>
+
+
+	<!--    right finger   -->
+	<link name="right_finger">
+		<visual>
+			<origin xyz="0 0 0.03" />
+			<geometry>
+				<box size="0.014 0.014 0.06" />
+			</geometry>
+			<material name="purple">
+				<color rgba="0.56 0 1 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0.03" />
+			<geometry>
+				<box size="0.01 0.01 0.06" />
+			</geometry>
+		</collision>
+	</link>
+
+
+	<!--    End-Effector   -->
+	<joint name="joint-ee" type="fixed">
+		<parent link="gripper_base" />
+		<child link="end-effector" />
+
+		<origin xyz="0 0 0.09" />  <!-- 기존 길이는 0.11m이지만, 보정을 위해 임시로 0.09으로 조정했습니다.-->
+	</joint>
+
+	<link name="end-effector"/>
+</robot>

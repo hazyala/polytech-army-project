@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot name="my_object">
+
+  <link name="base_link">
+
+    <!-- 시각화 -->
+    <visual>
+      <geometry>
+        <mesh filename="red_coffee_mug.obj" scale="1 1 1"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="1.0 0.7 0.7 1"/>
+      </material>
+    </visual>
+
+    <!-- 충돌 -->
+    <collision>
+      <geometry>
+        <mesh filename="red_coffee_mug_col.obj" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <!-- 물리 -->
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.001" iyy="0.001" izz="0.001"
+               ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+
+  </link>
+</robot>
