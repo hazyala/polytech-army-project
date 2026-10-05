@@ -1,4 +1,4 @@
-> 기존 개발 계획과 구조 기록이다. 현재 코드와 연결 경계는 [ARCHITECTURE_STATUS.md](ARCHITECTURE_STATUS.md), 실행은 [v2 README](../README.md)를 기준으로 본다. 목표·완료 표현과 측정 수치가 현재 장비의 검증 결과를 뜻하지 않는다.
+> 기존 개발 계획과 구조 기록이다. 현재 코드와 연결 경계는 [ARCHITECTURE_STATUS.md](ARCHITECTURE_STATUS.md), 실행은 [v2 README](../README.md)를 기준으로 본다.
 
 # 🚀 MACH_VII v2.0 개발 현황
 
