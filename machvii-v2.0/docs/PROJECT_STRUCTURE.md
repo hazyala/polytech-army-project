@@ -1,3 +1,5 @@
+> 기존 개발 계획과 구조 기록이다. 현재 코드와 연결 경계는 [ARCHITECTURE_STATUS.md](ARCHITECTURE_STATUS.md), 실행은 [v2 README](../README.md)를 기준으로 본다. 목표·완료 표현과 측정 수치가 현재 장비의 검증 결과를 뜻하지 않는다.
+
 # 📁 MACH-VII v2.0 폴더 구조 및 파일 명세
 
 이 문서는 프로젝트의 디렉토리 구조와 각 주요 파일의 역할을 정의합니다.

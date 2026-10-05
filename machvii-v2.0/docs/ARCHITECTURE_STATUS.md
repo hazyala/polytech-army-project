@@ -1,46 +1,41 @@
-# 🏗️ 아키텍처 설계 및 적용 현황 (Architecture Status)
+# 현재 아키텍처와 실행 경계
 
-2026.02.04 기준
+## 설계 명칭과 실제 호출
 
-## 1. 핵심 아키텍처: 7 Layer Pipeline 적용 현황
-이 시스템은 단방향으로 흐르는 7단계 파이프라인으로 구성되며, 현재 각 레이어의 적용 상태는 다음과 같습니다.
+Sensor·State·Brain·Strategy·Expression·Embodiment·Memory의 7개 영역은 책임 구분이다. 모든 모듈이 순차적인 DTO 전달만으로 실행되는 것은 아니다. `api_server.py`는 brain·sensor·strategy·memory·embodiment 인스턴스를 직접 사용하고 `pipeline.py`도 state와 strategy를 import한다. strict interface와 no reverse flow는 [설계 지침](ARCHITECTURE_GUIDELINES.md)으로 읽는다.
+
+## 명령과 관측
 
 ```mermaid
-graph LR
-    Sensor["Sensor (L1)"] -- "PerceptionPacket" --> State["State (L2)"]
-    State -- "SystemSnapshot" --> Brain["Brain (L3)"]
-    Brain -- "ActionIntent" --> Strategy["Strategy (L4)"]
-    Strategy -- "PoliteAction" --> Expression["Expression (L5)"]
-    Expression -- "MotionCommand" --> Embodiment["Embodiment (L6)"]
-    Embodiment -- "Result/Log" --> Memory["Memory (L7)"]
-    
-    style Sensor fill:#f9f,stroke:#333,stroke-width:2px
+sequenceDiagram
+    participant C as 명령 클라이언트
+    participant A as FastAPI
+    participant B as LogicBrain
+    participant T as Agent tool
+    participant P as Pipeline / 전략·로봇
+    C->>A: POST /api/request / command
+    A-->>C: accepted
+    A->>B: BackgroundTasks.execute_task
+    B->>T: 도구 선택
+    T->>P: 인식·grasp·로봇 요청
+    loop 상태 전송
+        A->>A: pipeline.get_system_snapshot
+        A-->>C: /ws JSON snapshot
+    end
 ```
 
-### 레이어별 현재 역할 (Current Implementation)
-1.  **Sensor (L1)**: **[개선 완료]** `VisionBridge`를 통해 Sim/Real 영상을 획득하고 YOLOv11로 객체를 탐지하여 3D 좌표를 산출합니다. RealSense 드라이버의 타임아웃 처리가 개선되었으며(3초), IMU 데이터 API가 일관성 있게 수정되었습니다.
-2.  **State (L2)**: **[운용 중]** `system_state.py`가 모든 레이어의 공통 참조 데이터를 중앙 관리합니다.
-3.  **Brain (L3)**: **[운용 중]** LogicBrain이 LLM과 연동하여 작업의 의도를 결정합니다.
-4.  **Strategy (L4)**: **[고도화 완료]** 'Intelligent Eye' 능동 인지 상태 기계 및 비주얼 서보잉이 통합되었습니다.
-5.  **Expression (L5)**: **[리뉴얼 완료]** 16종의 고유 모션을 가진 동적 프리셋이 탑재되어 있으며, `FaceContext`를 통해 실시간 렌더링됩니다.
-6.  **Embodiment (L6)**: **[운용 중]** 실물 로봇 및 PyBullet 시뮬레이터와 직접 통신하며, 3초 타임아웃의 빠른 폴백을 지원합니다.
-7.  **Memory (L7)**: **[운용 중]** FalkorDB를 통해 과거의 행동 결과를 그래프 데이터로 저장합니다.
+accepted 응답은 비동기 작업을 접수했다는 뜻이다. 작업 성공 응답이 아니다. 명령의 정지 키워드는 agent를 우회해 stop_agent·visual_servoing.stop·driver.emergency_stop을 호출한다.
 
----
+robot_action 도구는 broadcaster에 action_intent를 직접 발행한다. 도구 미사용 완료 callback에는 pipeline.process_brain_intent 경로도 있어 모든 도구가 pipeline을 순서대로 통과하지는 않는다.
 
-## 2. 준수 중인 설계 원칙 (Design Principles)
+`SystemSnapshot`은 timestamp, brain, emotion, perception, robot, strategy와 last_frame/last_depth/그리퍼 영상을 묶는다. DTO가 있다고 여러 thread의 관측이 동일 시각의 원자적 snapshot으로 보장되는 것은 아니다. RLock을 사용하는 singleton과 controller가 있지만 전체 deadlock·latency 측정 결과를 뜻하지 않는다.
 
-### ✅ No Reverse Flow (역류 금지)
-*   **현황**: 하위 레이어가 상위 레이어를 직접 Import하는 위반 사례를 `sensor` 레이어 리팩토링 과정에서 모두 제거했습니다. 데이터는 오직 `broadcaster`나 `system_state`를 통해서만 상향 전달됩니다.
+## 기억과 결과
 
-### ✅ Strict Interfaces (엄격한 인터페이스)
-*   **현황**: 레이어 간 데이터 전달은 `shared/ui_dto.py` 및 전용 패킷 구조를 통해서만 이루어지도록 강제하고 있습니다.
+FalkorDB manager는 Episode → Action, Episode → 시작/종료 Emotion 관계를 Cypher로 저장한다. 미연결 시 저장을 건너뛰고 일부 조회는 0.5 기본값을 반환한다. pipeline의 `result: executed`는 명령 하달을 기록한다. success/failure에 기반한 조회가 실제 로봇 성공률 측정과 일치하는지는 따로 검증해야 한다.
 
-### ✅ UI is Dumb (판단 로직 분리)
-*   **현황**: 프론트엔드와 하드웨어 드라이버 수준에서의 `if-else` 판단을 최소화하고, 모든 결정권은 `Brain`과 `Strategy` 계층으로 집중시키고 있습니다.
+## 재현 조건
 
-### ✅ Concurrency Safety (스레드 안전성)
-*   **현황**: `RLock` 및 락 프리 브로드캐스트 설계를 통해 멀티 스레드 환경에서의 데드락을 방지하고 시스템 프리징을 해결했습니다.
+Windows Conda export, 외부 Ollama endpoint, 모델 파일, RealSense와 캘리브레이션, 별도 로봇/시뮬레이터 HTTP 서버를 전제로 한다. PyBullet 기본 포트는 config의 5000이며 이전 문서의 5001과 달랐다. 외부 참고 구현은 `참고/`에 있고 프로젝트 자체 backend와 구분한다.
 
----
-*본 문서는 프로젝트의 설계 무결성을 모니터링하기 위해 지속적으로 업데이트됩니다.*
+[main.py](../main.py) · [API server](../interface/backend/api_server.py) · [pipeline](../shared/pipeline.py) · [DTO](../shared/ui_dto.py) · [memory](../memory/falkordb_manager.py) · [GlobalConfig](../shared/config.py)

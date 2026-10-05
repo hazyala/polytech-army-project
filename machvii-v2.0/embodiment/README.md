@@ -1,53 +1,9 @@
-# 🦾 Embodiment (신체 - 몸과 행동)
+# 로봇 driver와 제어
 
-## 📖 개요 (Overview)
-이 폴더는 로봇의 **'팔다리(Actuator)'**입니다. 
-뇌가 "잡아"라고 명령하면, 실제로 모터를 어떻게 돌려야 잡을 수 있는지 계산하고 실행하는 **물리적인 노동**을 담당합니다.
-가장 위험하고(물리적 충돌 가능성), 가장 정밀해야 하는 파트입니다.
+`robot_base.py`의 공통 경계를 PyBullet·DOFBOT driver가 구현한다. `robot_factory.py`는 대상별 driver를 만들고 `robot_controller.py`는 driver 선택·제어 loop·상태를 관리한다. `motion_controller.py`는 동작 명령 처리에 사용된다.
 
----
+DOFBOT은 별도 서버와 HTTP·Socket.IO로 연결하고 PyBullet도 별도 simulator 서버를 사용한다. 이 폴더가 모터·물리 엔진 전체를 자체 실행하는 것으로 보지 않는다. 서버 주소와 포트는 [GlobalConfig](../shared/config.py)를 확인한다.
 
-## 📂 파일 구조 및 상세 설명 (Structure & Files)
+긴급 정지는 현재 driver의 emergency_stop을 호출한다. 지원 pose 필드와 하드웨어 정지 동작은 driver별로 다르므로 실제 로봇과 가상 로봇의 동작이 완전히 같다고 설명하지 않는다. 초기 연결·캘리브레이션 조건은 [v2 실행](../README.md)을 본다.
 
-### 1. `robot_factory.py` (로봇 공장)
-- **역할**: 상황에 맞는 로봇 팔을 생성해주는 공장입니다.
-- **기능**:
-    - 설정이 '시뮬레이션'이면 -> 가상 로봇(PyBullet)을 내줍니다.
-    - 설정이 '실제 모드'면 -> 진짜 로봇(DOFBOT) 드라이버를 내줍니다.
-    - 덕분에 다른 코드는 지금 다루는 게 가짜인지 진짜인지 신경 안 써도 됩니다.
-
-### 2. `robot_controller.py` (현장 감독)
-- **역할**: 작업을 지시하고 관리하는 감독관입니다.
-- **기능**:
-    - `Pipeline`에서 내려온 명령("잡아!")을 받습니다.
-    - 너무 위험한 명령인지 확인합니다("긴급 정지" 등).
-    - 일을 순서대로 줄 세워(Queue) 하나씩 로봇에게 시킵니다.
-
-### 3. `dofbot_robot.py` (실제 팔)
-- **역할**: Yahboom DOFBOT 실물 로봇과 Socket.IO로 통신하는 클라이언트입니다.
-- **기능**:
-    - DOFBOT 서버(`참고/DOFBOT_ROBOT_ARM-main/main.py`)로부터 실시간 상태를 수신합니다.
-    - `get_current_pose()` 반환 필드: `position`(cm), `joints`(도), `is_moving`
-    - 서보모터 제어(XYZ 이동, 관절 각도 설정)를 서버에 전송합니다.
-    - TODO: 서버 확장 시 `gripper`, `orientation`, `joint_velocities` 필드도 자동 활성화됩니다.
-
-### 4. `pybullet_robot.py` (가상 팔)
-- **역할**: 컴퓨터 속 가상 로봇을 움직이는 파일입니다.
-- **기능**:
-    - 실제 로봇과 똑같이 동작하도록 물리 엔진을 제어합니다.
-
----
-
-## ⚙️ 작동 원리 (Logic Flow)
-
-1. **명령 수신**: `Pipeline` → `RobotController` ("좌표 10, 20으로 가서 잡아라").
-2. **계산**: "그 좌표로 가려면 팔을 어떻게 꺾어야 하지?" (역운동학 계산).
-3. **지시**: "1번 모터 움직여, 2번 모터 움직여."
-4. **실행 및 감시**: 팔이 움직이는 동안 계속 위치를 확인하며, 목표에 도착하면 "완료"라고 보고합니다.
-
----
-
-## 🔗 상속 및 관계 (Relationships)
-- **상위(Upstream)**: `Pipeline` (명령을 받음), `Strategy` (가끔 직접 제어를 받기도 함 - 기술 부채)
-- **하위(Downstream)**: 하드웨어 장치 (Motor, Serial Port)
-- **특징**: 이곳의 코드는 물리 법칙의 지배를 받습니다. 속도 제한이나 충돌 방지 로직이 필수입니다.
+[robot_factory](robot_factory.py) · [robot_controller](robot_controller.py) · [dofbot_robot](dofbot_robot.py) · [pybullet_robot](pybullet_robot.py)
