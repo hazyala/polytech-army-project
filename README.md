@@ -27,6 +27,6 @@ flowchart LR
     Pipeline --> Memory[(FalkorDB)]
 ```
 
-영상·상태 수집, 행동 판단, 물리 실행과 화면 표현은 서로 다른 주기로 움직인다. 고정된 Windows Conda 환경과 장비·외부 서버가 전제되어 clone만으로 실행을 보장하지 않는다. 성능·안전성·성공률은 문서의 목표 주기나 함수 존재만으로 주장하지 않는다.
+영상·상태 수집, 행동 판단, 물리 실행과 화면 표현은 서로 다른 주기로 움직인다. 실행에는 Windows Conda 환경과 장비·외부 서버가 필요하다.
 
 v2 실행과 API는 [v2 README](machvii-v2.0/README.md), [API 계약](machvii-v2.0/docs/API.md)을 본다. `참고/` 안의 외부 로봇·시뮬레이터 자료는 자체 구현 성과와 구분한다.

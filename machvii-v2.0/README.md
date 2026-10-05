@@ -36,7 +36,7 @@ docker compose up -d
 python main.py
 ```
 
-위 명령은 `machvii-v2.0/`에서 실행한다. Docker compose는 FalkorDB만 시작하고 모델·카메라·로봇 서버를 시작하지 않는다. 의존성 해결이나 외부 연결이 실패하면 정상 실행으로 보지 않는다.
+위 명령은 `machvii-v2.0/`에서 실행한다. Docker compose는 FalkorDB만 시작하고 모델·카메라·로봇 서버를 시작하지 않는다.
 
 | 연결 | 코드의 현재 값 / 위치 |
 |---|---|
@@ -47,9 +47,9 @@ python main.py
 | DOFBOT | 192.168.25.100:5000, `GlobalConfig` |
 | VLM | `GlobalConfig.VLM_ENDPOINT`, gemma3:27b |
 
-기존 문서의 PyBullet 5001 안내와 달리 현재 config는 5000이다. 주소·장비 serial은 `shared/config.py`의 상수이며 환경변수로 자동 치환되는 값이 아니다. 이 문서 정비에서 설정 파일은 바꾸지 않았다.
+기존 문서의 PyBullet 5001 안내와 달리 현재 config는 5000이다. 주소·장비 serial은 `shared/config.py`의 상수이며 환경변수로 자동 치환되는 값이 아니다.
 
-다른 터미널에서 [frontend](interface/frontend/README.md)를 실행한다. 명령 입력은 `python manual_client.py`, 상태·영상 확인은 `python vision_debug.py`에 별도 entry가 있다. 실제 장비 연결 없이 이를 검증했다고 주장하지 않는다.
+다른 터미널에서 [frontend](interface/frontend/README.md)를 실행한다. 명령 입력은 `python manual_client.py`, 상태·영상 확인은 `python vision_debug.py`에 별도 entry가 있다.
 
 ## API와 구현 메모
 
