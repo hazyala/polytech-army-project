@@ -7,7 +7,7 @@
 | 폴더 | 구현과 읽을 지점 |
 |---|---|
 | [machvii-v2.0](machvii-v2.0/README.md) | FastAPI·React, WebSocket 상태, LangChain agent, PyBullet/DOFBOT adapter, FalkorDB |
-| [machvii-v1.0](machvii-v1.0/README.md) | 이전 agent·시뮬레이터 실험. 좌표계·로봇 각도·작업 공간 수정 필요 기록 유지 |
+| [machvii-v1.0](machvii-v1.0/README.md) | Streamlit agent, RGB-D·YOLO 관측, 로봇 HTTP 도구와 SVG 얼굴 |
 | [army-simulator-proto](army-simulator-proto/README.md) | Streamlit·WebRTC, YOLO와 LLM 반응, GIF 얼굴을 연결한 초기 프로토타입 |
 
 핵심 구현은 v2의 `main.py`와 `interface/backend/api_server.py`에서 시작한다. 자연어 명령을 agent에 넘기고, 상태는 WebSocket `/ws`로 React 얼굴 화면에 전달한다. 전략 필터와 로봇 driver, 기억 저장을 별도 모듈로 다룬다. “7 Layer”는 설계 구분이며 실제 import와 실행 흐름은 [현재 아키텍처](machvii-v2.0/docs/ARCHITECTURE_STATUS.md)에 정리했다.

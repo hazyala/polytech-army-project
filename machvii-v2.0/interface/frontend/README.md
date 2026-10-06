@@ -10,6 +10,6 @@ npm run dev
 
 저장소 루트 기준 명령이다. Node.js 22.12 이상과 npm을 사용하고 Vite가 출력한 주소에 접속한다. backend는 별도 터미널에서 실행한다. `npm run build`, `npm run lint` script도 있다. `npm run preview`는 빌드된 화면 확인이다.
 
-WebSocket 주소는 현재 코드에 고정돼 있다. `.env`의 VITE_API_URL 같은 설정을 가정하지 않는다. backend 연결 없이 얼굴 UI가 뜨는 것과 실시간 로봇 상태 연결을 구분한다.
+WebSocket 주소는 현재 코드에 고정돼 있다. 실시간 상태를 받으려면 backend도 실행해야 한다.
 
 [backend와 API](../../docs/API.md) · [v2 실행](../../README.md)

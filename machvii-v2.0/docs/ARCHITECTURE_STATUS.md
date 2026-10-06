@@ -36,6 +36,6 @@ FalkorDB manager는 Episode → Action, Episode → 시작/종료 Emotion 관계
 
 ## 재현 조건
 
-Windows Conda export, 외부 Ollama endpoint, 모델 파일, RealSense와 캘리브레이션, 별도 로봇/시뮬레이터 HTTP 서버를 전제로 한다. PyBullet 기본 포트는 config의 5000이며 이전 문서의 5001과 달랐다. 외부 참고 구현은 `참고/`에 있고 프로젝트 자체 backend와 구분한다.
+Windows Conda export, 외부 Ollama endpoint, 모델 파일, RealSense와 캘리브레이션, 별도 로봇/시뮬레이터 HTTP 서버를 전제로 한다. PyBullet 기본 포트는 config의 5000이다. 외부 참고 구현은 `참고/`에 있고 프로젝트 자체 backend와 구분한다.
 
 [main.py](../main.py) · [API server](../interface/backend/api_server.py) · [pipeline](../shared/pipeline.py) · [DTO](../shared/ui_dto.py) · [memory](../memory/falkordb_manager.py) · [GlobalConfig](../shared/config.py)

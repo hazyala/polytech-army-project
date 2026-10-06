@@ -6,4 +6,8 @@
 
 `prompts.py`의 SYSTEM_INSTRUCTION이 있다는 것과 executor의 prefix로 활성화됐다는 것은 다르다. 현재 prefix 지정은 주석 처리돼 있다. `emotion_brain.py`는 robot/arm 상태를 읽어 감정 이벤트를 결정하고 `emotion_updater_deprecated.py`는 이전 코드다.
 
+## 입력과 출력
+
+HTTP 명령의 텍스트를 agent에 전달하고 선택한 도구의 결과를 대화 응답으로 돌려준다. 물체 위치는 vision 도구, 로봇 동작은 robot/grasp 도구가 처리한다. 도구가 발행한 intent와 생각 상태는 broadcaster를 거쳐 다른 모듈과 화면에 전달된다.
+
 [LogicBrain](logic_brain.py) · [등록 도구](tools/__init__.py) · [현재 실행 흐름](../docs/ARCHITECTURE_STATUS.md)

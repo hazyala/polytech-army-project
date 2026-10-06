@@ -9,6 +9,6 @@
 | [state_broadcaster.py](state_broadcaster.py) | 이벤트 발행·구독과 상태 snapshot |
 | [filters.py](filters.py) | 공용 필터 |
 
-`SystemPipeline`은 등록된 component를 사용하고 state·strategy·memory를 직접 참조한다. 모든 흐름을 무조건 7단계 순차 호출로 이해하지 않는다. 현재 GlobalConfig 값은 환경변수 자동 치환이 아니라 Python 상수다.
+`SystemPipeline`은 등록된 component를 사용하고 state·strategy·memory를 직접 참조한다. 현재 GlobalConfig 값은 환경변수 자동 치환이 아니라 Python 상수다.
 
-기존 문서의 개발 PC `file:///d:/...` 링크를 저장소 상대 링크로 바꿨다. [HTTP/WS 계약](../docs/API.md)과 [실제 경계](../docs/ARCHITECTURE_STATUS.md)에 공통 규약을 모아 중복 설명을 줄인다.
+[HTTP/WS 계약](../docs/API.md)과 [실제 경계](../docs/ARCHITECTURE_STATUS.md)에 공통 규약을 모아 중복 설명을 줄인다.

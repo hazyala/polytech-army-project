@@ -47,7 +47,7 @@ python main.py
 | DOFBOT | 192.168.25.100:5000, `GlobalConfig` |
 | VLM | `GlobalConfig.VLM_ENDPOINT`, gemma3:27b |
 
-기존 문서의 PyBullet 5001 안내와 달리 현재 config는 5000이다. 주소·장비 serial은 `shared/config.py`의 상수이며 환경변수로 자동 치환되는 값이 아니다.
+PyBullet 서버 포트는 `GlobalConfig.PYBULLET_PORT`의 5000이다. 주소·장비 serial은 `shared/config.py`의 상수이며 환경변수로 자동 치환되는 값이 아니다.
 
 다른 터미널에서 [frontend](interface/frontend/README.md)를 실행한다. 명령 입력은 `python manual_client.py`, 상태·영상 확인은 `python vision_debug.py`에 별도 entry가 있다.
 
@@ -55,4 +55,4 @@ python main.py
 
 `POST /api/request`는 command/config_change/emergency DTO를 받는다. 레거시 `/api/command`, `/api/config`도 남아 있다. 입력·응답·정지 경로 차이는 [API](docs/API.md)를 본다.
 
-`SystemPipeline`은 intent를 전략으로 걸러내고 상태와 표현을 갱신한 뒤 에피소드를 저장한다. 저장 결과 `executed`는 명령 하달 기록이며 실제 grasp 성공 판정이 아니다. Graph DB에는 Episode·Action·Emotion 관계가 저장되며 Vector DB나 자동 정책 학습이 구현된 것으로 소개하지 않는다.
+`SystemPipeline`은 intent를 전략으로 걸러내고 상태와 표현을 갱신한 뒤 에피소드를 저장한다. 저장 결과 `executed`는 명령 하달 기록이며 실제 grasp 성공 판정이 아니다. Graph DB에는 Episode·Action·Emotion 관계를 저장한다.
